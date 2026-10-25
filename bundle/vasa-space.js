@@ -568,6 +568,13 @@ a.sg-card:hover { border-color: rgb(255 255 255 / 0.7); background: rgb(255 255 
 .sp-chips__k, .sg-chips__k { margin-right: 4px; }
 .sp-card .sp-meta > span:first-of-type { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sp-grid .sp-meta > span:first-of-type { white-space: normal; overflow: visible; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+
+/* both groups share the corner controls' margins: left edge with the mark and Scroll, right edge with the sound and At a glance buttons */
+.sp-tagcol--l { left: 28px; } .sp-tagcol--r { right: 28px; }
+.sp-tagcol--l .sp-tagcol__txt { align-items: flex-start; }
+.sp-logos { width: min(27rem, 40vw); }
+.sp-logos__track { animation-duration: 36s; }
+@media (max-width: 759px), (max-aspect-ratio: 4/5) { .sp-tagcol--l { left: 16px; } .sp-tagcol--r { right: 16px; } .sp-logos { width: min(18rem, 70vw); } }
 .sp-hero h1,.sp-title,.sp-foot__t{font-family:var(--f-head,Lufga),Lufga,Gilroy,sans-serif!important}
 `;var ts=`
       <canvas class="sp-frame__canvas" aria-label="An isometric steel slab with a laptop, a filing cabinet, a record player, a lamp, an old Mac, a chess knight, a camera, headphones, a compass and other small objects"></canvas>

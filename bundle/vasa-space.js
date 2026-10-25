@@ -521,7 +521,7 @@ a.sg-card:hover { border-color: rgb(255 255 255 / 0.7); background: rgb(255 255 
 .vfhost.is-space.at-home .sp-glance-btn, .vfhost.is-glance .sp-glance-btn { opacity: 1; pointer-events: auto; }
 .sp-hint { position: absolute; left: 28px; bottom: 24px; translate: none; display: inline-flex; flex-direction: row; align-items: center; justify-items: unset; gap: 10px; height: 30px; padding: 0 14px; border: 1px solid rgb(255 255 255 / 0.3); background: rgb(0 0 0 / 0.55); color: #d4d4d4; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.02em; pointer-events: none; }
 .sp-hint::before, .sp-hint::after { content: ''; position: absolute; width: 5px; height: 5px; background: #fff; opacity: 0.85; } .sp-hint::before { left: -3px; top: -3px; } .sp-hint::after { right: -3px; bottom: -3px; }
-.vfhost.is-space.at-home .sp-hint:not(.gone) { opacity: 1; } body:not(.at-home) .sp-hint { opacity: 0 !important; }
+.vfhost.is-space.at-home .sp-hint:not(.gone) { opacity: 1; } .vfhost:not(.at-home) .sp-hint { opacity: 0 !important; }
 /* the right note: words, a rule, then the cut-out; the whole box sits at mid-height like its twin */
 .sp-tagcol--r { align-items: flex-end; gap: 0; }
 .sp-tag--r { position: relative; display: flex; flex-direction: row; align-items: stretch; gap: 0; padding: 0; max-width: none; white-space: nowrap; text-align: right; }

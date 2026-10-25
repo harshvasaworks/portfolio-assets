@@ -591,6 +591,7 @@ a.sg-card:hover { border-color: rgb(255 255 255 / 0.7); background: rgb(255 255 
 @media (max-width: 759px), (max-aspect-ratio: 4/5) { .sp-chips, .sg-chips { grid-template-columns: repeat(3, max-content); } }
 .sp-logos { width: min(24.3rem, 36vw); }
 .sp-tag--r .sp-role { display: block; text-align: center; line-height: 1.4; }
+@media (min-width: 760px) and (min-aspect-ratio: 5/4) { .sp-logos { width: min(19rem, 22vw); } }
 .sp-hero h1,.sp-title,.sp-foot__t{font-family:var(--f-head,Lufga),Lufga,Gilroy,sans-serif!important}
 `;var ts=`
       <canvas class="sp-frame__canvas" aria-label="An isometric steel slab with a laptop, a filing cabinet, a record player, a lamp, an old Mac, a chess knight, a camera, headphones, a compass and other small objects"></canvas>

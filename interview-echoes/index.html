@@ -66,7 +66,7 @@ body{font-family:var(--font);background:#fbfbfd;color:var(--body);line-height:1.
 .cap.abv{top:27vh}
 
 /* folder */
-.fold{position:absolute;left:50%;top:57%;width:min(330px,70vw);aspect-ratio:1;z-index:4;
+.fold{position:absolute;left:50%;top:var(--fcy,57%);width:var(--fw,min(330px,70vw));aspect-ratio:1;z-index:4;
  transform:translate(-50%,-50%);will-change:transform,opacity}
 .fframe{position:absolute;inset:0;border-radius:36px;background:#dcdecf;padding:11px;
  box-shadow:0 34px 70px rgba(40,40,70,.16),0 2px 0 rgba(255,255,255,.7) inset}
@@ -393,6 +393,8 @@ body{font-family:var(--font);background:#fbfbfd;color:var(--body);line-height:1.
 @media (max-width:1180px){.cap.side,.cap.abv{top:max(4.6vh,var(--notch))}.cap.mid{top:max(22vh,var(--notch))}}
 /* the scroll progress runs along the bottom edge */
 .prog{top:auto;bottom:0}
+/* the right-hand dot progress is gone: the bar along the bottom does that job */
+.dots{display:none}
 </style>
 </head>
 <body>
@@ -427,7 +429,7 @@ body{font-family:var(--font);background:#fbfbfd;color:var(--body);line-height:1.
      cbtn=$('#cbtn'),cpanel=$('#cpanel'),cptxt=$('#cptxt');
  var W=0,H=0,sc=1,sd=.86;
  var HEAD=Array.from("Hey James 👋 AI Companion has a few insights for you"),CPT="Panel calibrated. Two rounds now carry the AI-workflow task.";
- var bfw=560,headN=-1,pillW=56,cptN=-1;
+ var bfw=560,headN=-1,pillW=56,cptN=-1,FH=330,FCY=0,FH0=330,FCY0=0,FHc=330,FCYc=0,NOTEY=0,SEARCHY=0;
 
  function typeInto(el,text,speed,cb){
   var ch=Array.from(text);
@@ -445,6 +447,15 @@ body{font-family:var(--font);background:#fbfbfd;color:var(--body);line-height:1.
    if(p._dock>=0){var s=slots[p._dock];s.style.width=(p._w*sd)+'px';s.style.height=(p._h*sd)+'px';}
   });
   var t=bhead.textContent;bhead.textContent=HEAD.join('');bfw=bhead.offsetWidth;bhead.textContent=t;headN=-1;
+  // hero layout. At rest: the heading, then the folder under it. Once you scroll the heading fades and the folder
+  // centres, with the note pill above it and the search pill below it, each with air between.
+  var capB=$('.cap.big'),pn=$('.pl.note'),ps=$('.pl.search'),nh=(pn?pn._h:58)*sc,sh=(ps?ps._h:58)*sc;
+  var ft0=capB.offsetTop+capB.offsetHeight+28;
+  FH0=Math.max(170,Math.min(330,W*.7,H-ft0-34));FCY0=ft0+FH0/2;
+  FH=Math.max(170,Math.min(330,W*.7,H*.44));FCY=H/2;
+  NOTEY=FCY-FH/2-26-nh/2;SEARCHY=FCY+FH/2+26+sh/2;
+  FHc=FH0;FCYc=FCY0;
+  stage.style.setProperty('--fcy',FCY0.toFixed(1)+'px');stage.style.setProperty('--fw',FH0.toFixed(1)+'px');
  }
 
  // --- timed / typed moments (each runs once, then stays) ---
@@ -507,7 +518,7 @@ body{font-family:var(--font);background:#fbfbfd;color:var(--body);line-height:1.
    dots.forEach(function(d,k){d.classList.toggle('on',k===n);});
   }
   // headlines move around: top, centre, beside the card, above the chat
-  var c=n===0?(U<150?0:(U<240?-1:1)):(n===1?2:(n===2?3:-1));
+  var c=n===0?(U<3?0:(U<240?-1:1)):(n===1?2:(n===2?3:-1));
   if(c!==curCap){curCap=c;caps.forEach(function(el){el.classList.toggle('on',parseInt(el.getAttribute('data-c'),10)===c);});}
  }
 
@@ -533,6 +544,8 @@ body{font-family:var(--font);background:#fbfbfd;color:var(--body);line-height:1.
    amb.style.opacity=dk.toFixed(3);
 
    // folder opens first, then pills rise out on curved paths and settle
+   var fe=eo(seg(U,0,40));FHc=lerp(FH0,FH,fe);FCYc=lerp(FCY0,FCY,fe);
+   stage.style.setProperty('--fcy',FCYc.toFixed(1)+'px');stage.style.setProperty('--fw',FHc.toFixed(1)+'px');
    var tA=seg(U,10,150),tB=seg(U,185,300);
    var o=eo(clamp(tA*2.2)),eB=eio(tB);
    fold.style.setProperty('--o',o.toFixed(3));
@@ -553,12 +566,19 @@ body{font-family:var(--font);background:#fbfbfd;color:var(--body);line-height:1.
    glass.style.opacity=gOp.toFixed(3);glass.classList.toggle('open',U>=450&&cout<.5);
 
    var st=stage.getBoundingClientRect(),N=pills.length;
-   var foldH=Math.min(330,W*.7),fcx=W/2,fcy=H*.57-foldH*.16,qr=qin.getBoundingClientRect();
+   var foldH=FHc,fcx=W/2,fcy=FCYc-FHc*.16,qr=qin.getBoundingClientRect();
    var qx=qr.left-st.left+Math.min(qr.width,260)/2,qy=qr.top-st.top+qr.height/2;
    for(var i=0;i<N;i++){
     var p=pills[i];
     var ta=clamp((tA-.14-i*.038)/(1-.14-.038*(N-1))),tb=clamp((tB-i*.03)/(1-.03*(N-1)));
     var hw=p._w*sc/2+10,mx=clamp(p._fx*W,hw,W-hw),my=p._fy*H;
+    if(p.classList.contains('note'))my=NOTEY;else if(p.classList.contains('search'))my=SEARCHY;
+    else{ // side pills keep clear of the folder
+     var pw=p._w*sc,ph=p._h*sc,fL=fcx-FH/2-24,fR=fcx+FH/2+24,fT=FCY-FH/2-18,fB=FCY+FH/2+18;
+     if(my+ph/2>fT&&my-ph/2<fB){if(mx<fcx)mx=Math.min(mx,fL-pw/2);else mx=Math.max(mx,fR+pw/2);mx=clamp(mx,pw/2+10,W-pw/2-10);}
+     var sp_=$('.pl.search'),sw=(sp_?sp_._w:0)*sc,sT=SEARCHY-(sp_?sp_._h:58)*sc/2-14,sB=SEARCHY+(sp_?sp_._h:58)*sc/2+14;
+     if(my+ph/2>sT&&my-ph/2<sB){if(mx<fcx)mx=Math.min(mx,W/2-sw/2-22-pw/2);else mx=Math.max(mx,W/2+sw/2+22+pw/2);mx=clamp(mx,pw/2+10,W-pw/2-10);}
+    }
     var fl=ta*(1-tb);
     mx+=Math.sin(now/900+i*1.7)*7*fl;my+=Math.cos(now/1100+i*2.3)*6*fl;
     var x,y,s,op;

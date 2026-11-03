@@ -385,6 +385,12 @@ body{font-family:var(--font);background:#fbfbfd;color:var(--body);line-height:1.
 .stage.lens .chatpos{bottom:4vh}
 .stage.lens .msgs{max-height:clamp(88px,calc(82vh - 335px),330px)}
 @media (max-width:1180px){.cap.abv{top:4.6vh}.stage.lens .msgs{max-height:clamp(88px,calc(100vh - 460px),330px)}}
+
+/* notch clearance: nothing sits under the navbar that floats over the top centre */
+:root{--notch:58px}
+.ov{padding-top:var(--notch)}
+.cap{top:max(4.6vh,var(--notch))}
+@media (max-width:1180px){.cap.side,.cap.abv{top:max(4.6vh,var(--notch))}.cap.mid{top:max(22vh,var(--notch))}}
 </style>
 </head>
 <body>

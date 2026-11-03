@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Interview Echoes — Post-Interview Insights · Walkthrough</title>
+<meta name="description" content="A scroll-driven walkthrough of Interview Echoes, the Post-Interview Insights layer and AI Companion coaching agent.">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+ /* the four supplied gradients, and nothing else */
+ --g-med:linear-gradient(100deg,#3683c5,#8c5797);
+ --g-lt:linear-gradient(100deg,#94c9f9,#cfb0da);
+ --g-xl:linear-gradient(100deg,#bfdffe,#e4d2eb);
+ --g-dk:linear-gradient(100deg,#0d4779,#54245b);
+ --ink:#14171f; --body:#5a6473; --mut:#8a93a3; --faint:#aab1bd; --line:#e7e9ee; --line2:#dcdfe6;
+ --dtext:#f1f0f7; --dbody:#b4b1c2; --dmut:#7e7a90; --dline:#2a2836;
+ --navy:#14264f;
+ --font:'Gilroy','Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+ --max:1080px;
+}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--font);background:#fbfbfd;color:var(--body);line-height:1.5;
+ -webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:#d9e4fb;color:var(--ink)}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 28px;position:relative;z-index:2}
+.prog{position:fixed;top:0;left:0;height:3px;width:100%;transform:scaleX(0);transform-origin:0 50%;
+ background:var(--g-med);z-index:80}
+
+.blob{display:inline-block;border-radius:50%;flex:0 0 auto;background:linear-gradient(135deg,#3683c5,#8c5797)}
+/* every avatar: flat light gray, no glass */
+.gav{border-radius:50%;background:#e3e6ec;color:#5a6473;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
+.gav svg{width:56%;height:56%}
+.gav.dk{background:#d9dce4;color:#2b303b}
+
+/* ---------- overview ---------- */
+.rv{opacity:0;transform:translateY(22px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+.d1{transition-delay:.07s}.d2{transition-delay:.14s}.d3{transition-delay:.21s}.d4{transition-delay:.28s}.d5{transition-delay:.35s}
+.ov{display:flex;flex-direction:column;justify-content:center;text-align:center;padding:68px 0 14px}
+.ovmeta{display:flex;justify-content:center;flex-wrap:wrap;gap:28px 56px}
+.ovmeta .k,.ovfocus .k{font-size:11px;font-weight:700;color:var(--mut);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+.ovmeta .v,.ovfocus .v{font-size:15px;font-weight:700;color:var(--ink);line-height:1.4}
+.ovfocus{margin-top:22px}
+.ovline{width:54px;height:3px;border-radius:3px;background:var(--g-med);margin:24px auto 0}
+
+/* ---------- the pinned film ---------- */
+.story{position:relative;height:2276vh}
+.stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;pointer-events:none;
+ --sbg:#fbfbfd;--sink:#14171f;--sbody:#5a6473;background:var(--sbg)}
+.stage .gt,.stage .talk{pointer-events:auto}
+.dots{position:absolute;right:16px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:9px;z-index:9}
+.dots i{width:5px;height:5px;border-radius:3px;background:var(--sink);opacity:.2;transition:height .5s,opacity .5s}
+.dots i.on{height:20px;opacity:.85}
+
+.cap{position:absolute;left:0;right:0;top:4.6vh;text-align:center;font-weight:700;letter-spacing:-.04em;
+ font-size:clamp(26px,3.7vw,48px);line-height:1.04;color:var(--sink);padding:0 20px;z-index:7;
+ opacity:0;transform:translateY(12px);filter:blur(6px);
+ transition:opacity .35s ease,transform .35s ease,filter .35s ease}
+.cap.on{opacity:1;transform:none;filter:none;
+ transition:opacity .85s cubic-bezier(.2,.7,.2,1) .28s,transform .85s cubic-bezier(.2,.7,.2,1) .28s,filter .85s ease .28s}
+.cap.big{font-size:clamp(36px,6.2vw,80px);letter-spacing:-.05em;line-height:.98}
+.cap small{display:block;font-size:clamp(14px,1.15vw,17px);font-weight:600;letter-spacing:0;line-height:1.4;color:var(--sbody);margin-top:10px}
+.cap.mid{top:31vh}
+.cap.side{left:max(24px,3vw);right:auto;top:39vh;width:min(270px,21vw);text-align:left;padding:0;font-size:clamp(26px,2.6vw,36px)}
+.cap.abv{top:27vh}
+
+/* folder */
+.fold{position:absolute;left:50%;top:57%;width:min(330px,70vw);aspect-ratio:1;z-index:4;
+ transform:translate(-50%,-50%);will-change:transform,opacity}
+.fframe{position:absolute;inset:0;border-radius:36px;background:#dcdecf;padding:11px;
+ box-shadow:0 34px 70px rgba(40,40,70,.16),0 2px 0 rgba(255,255,255,.7) inset}
+.fin{position:relative;width:100%;height:100%;border-radius:26px;overflow:hidden;background:#fffff8}
+.fgrad{position:absolute;inset:0 0 38% 0;transform:scale(calc(1 + var(--o,0)*.14));transform-origin:50% 100%;
+ background:radial-gradient(70% 90% at 14% 18%,rgba(148,201,249,.34) 0%,transparent 62%),var(--g-dk)}
+.fsheet{position:absolute;left:0;right:0;top:35%;bottom:0;background:#fffff8;border-radius:0 24px 0 0;
+ transform-origin:50% 100%;
+ transform:perspective(900px) translateY(calc(var(--o,0)*8%)) rotateX(calc(var(--o,0)*-20deg))}
+.ftab{position:absolute;left:0;top:-33px;height:34px;width:58%;background:#fffff8;border-radius:20px 0 0 0;
+ clip-path:polygon(0 0,84% 0,100% 100%,0 100%)}
+.ftitle{position:absolute;left:14px;top:-31px;height:30px;display:flex;align-items:center;gap:8px;font-size:15.5px;font-weight:700;color:#14171f;letter-spacing:-.01em;white-space:nowrap}
+.favt{width:24px;height:24px;border-radius:50%;overflow:hidden;flex:0 0 auto;background:#e3e6ec}
+.favt svg{width:100%;height:100%;display:block}
+.fsub{position:absolute;left:20px;top:13px;font-size:13px;font-weight:600;color:#9a9a94}
+.fbot{position:absolute;left:20px;right:20px;bottom:18px;display:flex;justify-content:space-between;align-items:baseline;color:#14171f}
+.fbot b{font-size:42px;font-weight:700;letter-spacing:-.04em}
+.fbot small{font-size:14px;font-weight:600;margin-left:6px}
+.fbot span{font-size:13.5px;font-weight:600;white-space:nowrap;color:#5a6473}
+
+/* pills */
+.pills{position:absolute;inset:0;z-index:6}
+.pl{position:absolute;left:0;top:0;height:46px;display:inline-flex;align-items:center;gap:10px;padding:0 18px;
+ border-radius:999px;background:#fff;color:#1a1d24;font-weight:700;font-size:16px;white-space:nowrap;
+ box-shadow:0 8px 22px rgba(40,50,80,.09),0 1px 0 #fff inset;opacity:0;will-change:transform,opacity;transform-origin:50% 50%}
+.pl svg{width:19px;height:19px;flex:0 0 auto}
+.pl.press{animation:press .42s ease}
+@keyframes press{50%{filter:brightness(1.06);box-shadow:0 0 0 7px rgba(148,201,249,.4)}}
+.pl.ask{padding:0 20px;color:var(--navy);border:2px solid rgba(255,255,255,.9);background:var(--g-lt);box-shadow:0 12px 26px rgba(84,120,200,.26)}
+.pl.ask svg{width:22px;height:22px}
+.pl.person{padding:0 14px 0 8px}.pl.person .x{color:#a2a8b3}
+.pl.upload{background:rgba(255,255,255,.55);border:2px dashed #cdd1d8;color:#6c7380;box-shadow:none}
+.pl.filter{padding:0 14px 0 18px;color:#5b6270}.pl.filter b{color:#3683c5}
+.pl.filter .sepv{width:1px;height:24px;background:#e3e6ea;margin:0 2px}.pl.filter .x{color:#a2a8b3}
+.pl.seg{padding:0 5px;gap:3px;background:#e8e8eb;box-shadow:none}
+.pl.seg i{width:48px;height:36px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;color:#14171f}
+.pl.seg i.on{background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.pl.mins{padding:0 6px 0 20px;gap:12px;font-size:18px;color:#14171f}
+.pl.mins .m{color:#8b929d;font-weight:600;font-size:16px}.pl.mins .ud{color:#a2a8b3}
+.pl.mins .go{height:36px;padding:0 16px;border-radius:12px;color:var(--navy);font-size:14px;display:inline-flex;align-items:center;background:var(--g-lt)}
+.pl.side{width:46px;padding:0;justify-content:center;color:#7d8491;border-radius:16px}
+.pl.online{background:#cdeed9;color:#3b9d64;box-shadow:none}.pl.online i{width:9px;height:9px;border-radius:50%;background:#3b9d64}
+.pl.prog2{background:#f7faff;color:#3b7fd6;box-shadow:none}
+.pl.prog2 i{width:22px;height:22px;border-radius:50%;border:2.5px dashed #3b7fd6;animation:spin 3.2s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pl.search{background:#ececef;color:#9097a3;padding:0 6px 0 22px;gap:28px;box-shadow:none}
+.pl.search u{width:34px;height:34px;border-radius:50%;background:#fff;display:inline-flex;align-items:center;justify-content:center;
+ color:#7d8491;box-shadow:0 2px 8px rgba(0,0,0,.08);text-decoration:none}
+.pl.note{padding:0 20px;gap:11px;font-size:15px;font-weight:600;
+ background:linear-gradient(#fff,#fff) padding-box,var(--g-lt) border-box;border:1.6px solid transparent}
+.pl.note b{font-weight:800}.pl.note .vi{color:#3683c5;font-weight:800;display:inline-flex;align-items:center;gap:4px}
+.pl.note .vi svg{width:15px;height:15px}
+
+/* transcript backdrop */
+.bgdoc{position:absolute;inset:0;z-index:1;display:flex;justify-content:center;gap:clamp(40px,7vw,110px);
+ padding:0 4vw;font-family:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+ font-size:clamp(16px,1.8vw,24px);line-height:1.66;color:#2c2c33;opacity:0;
+ filter:blur(3.2px);-webkit-mask-image:radial-gradient(ellipse 66% 58% at 50% 44%,#000 0%,transparent 96%);
+ mask-image:radial-gradient(ellipse 66% 58% at 50% 44%,#000 0%,transparent 96%);pointer-events:none}
+.bgdoc div{width:min(44ch,46vw);padding-top:9vh}
+.bgdoc p{margin-bottom:1.1em;opacity:.8}
+.bgdoc mark{background:linear-gradient(100deg,rgba(54,131,197,0) 0%,rgba(54,131,197,.22) 45%,rgba(140,87,151,.26) 100%);
+ color:inherit;border-radius:4px;background-size:0 100%;background-repeat:no-repeat;transition:background-size 1.4s ease .6s}
+.stage.cho .bgdoc mark{background-size:100% 100%}
+.bgdoc.drift div{animation:docdrift 16s ease-in-out infinite alternate}
+@keyframes docdrift{to{transform:translateY(-22px)}}
+.veil{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0;
+ background:radial-gradient(64% 58% at 50% 56%,rgba(251,251,253,.78) 0%,transparent 100%)}
+
+/* chat */
+.chatpos{position:absolute;left:50%;bottom:6.5vh;width:min(640px,92vw);z-index:5;opacity:0;margin-left:calc(min(640px,92vw)/-2)}
+.chat{background:#fff;border:1px solid var(--line);border-radius:26px;padding:16px 16px 14px;box-shadow:0 30px 80px rgba(30,40,80,.14)}
+.chathead{display:flex;align-items:center;gap:8px;padding:0 4px 2px}
+.chathead b{font-size:13.5px;font-weight:800;color:var(--ink);line-height:1.2}
+.chathead span{font-size:12px;color:var(--mut);font-weight:600}
+.msgs{max-height:0;opacity:0;overflow:hidden;padding:0 4px;
+ transition:max-height 1s cubic-bezier(.3,.8,.3,1),opacity .7s,margin .7s;margin-top:0}
+.stage.cho .msgs{max-height:min(44vh,400px);opacity:1;margin-top:14px}
+.pg2{display:none}.stage.lens .pg1{display:none}.stage.lens .pg2{display:block}
+.cmsg{display:flex;margin-bottom:11px}
+.cmsg.user{justify-content:flex-end;opacity:0;transform:translateY(8px);transition:.5s}
+.cmsg.user.show{opacity:1;transform:none}
+.cmsg.bot{gap:9px;opacity:0;transform:translateY(8px);transition:.5s}
+.cmsg.bot.show{opacity:1;transform:none}
+.cmsg .gav{margin-top:2px}
+.cbub{max-width:86%;font-size:14.5px;font-weight:600;line-height:1.5;color:var(--ink);background:#f3f4f7;border-radius:16px;padding:10px 15px}
+.cmsg.user .cbub{background:#e8f2fd}
+.cmsg.bot .cbub{background:linear-gradient(180deg,#f2f8ff,#f6f0fa);border:1px solid #e3e8f6}
+.caret::after{content:"";display:inline-block;width:2px;height:1em;background:#5b61b5;margin-left:2px;vertical-align:-.12em;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.cchips{display:flex;gap:7px;flex-wrap:wrap;margin:2px 0 8px 33px;opacity:0;transform:translateY(6px);transition:.55s}
+.cchips.show{opacity:1;transform:none}
+.ccap{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--ink);
+ background:#fff;border:1px solid var(--line2);border-radius:999px;padding:7px 12px}
+.ccap svg{width:14px;height:14px;color:#5b61b5}
+.lline{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;opacity:0;transform:translateY(8px);transition:.5s}
+.lline.show{opacity:1;transform:none}
+.lline .lt{font-size:14px;font-weight:600;color:var(--ink);line-height:1.45;padding-top:1px;min-height:20px}
+.lline .lt s{display:block;font-size:11px;font-weight:700;color:var(--mut);text-decoration:none;letter-spacing:.02em}
+.dbtn{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:800;color:#fff;background:var(--g-med);
+ border-radius:999px;padding:10px 17px;margin:4px 0 6px 0;opacity:0;transform:translateY(6px) scale(.96);transition:.6s .6s}
+.dbtn.show{opacity:1;transform:none}.dbtn svg{width:15px;height:15px}
+.composer{margin-top:10px;border:1px solid var(--line);border-radius:18px;padding:12px 12px 10px;background:#fcfcfd}
+.cinp{min-height:24px;padding:2px 4px 10px}
+.qin{font-size:15px;font-weight:600;color:var(--ink)}
+.qin:empty::before{content:attr(data-ph);color:var(--faint);font-weight:500}
+.ctool{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ctool .sp{flex:1}
+.slot{display:inline-block;flex:0 0 auto}
+
+/* insight card with generating state */
+.gen{position:absolute;right:-84px;bottom:6.5vh;width:360px;z-index:3;border-radius:30px;overflow:hidden;opacity:0;
+ box-shadow:0 30px 70px rgba(84,100,180,.24);background:var(--g-xl);padding:16px 16px 18px}
+.genart{position:absolute;inset:-12%;filter:blur(var(--gb,18px));z-index:0;
+ background:radial-gradient(55% 45% at 18% 20%,#94c9f9 0%,transparent 64%),
+  radial-gradient(60% 55% at 86% 18%,#cfb0da 0%,transparent 62%),
+  radial-gradient(55% 55% at 26% 86%,#bfdffe 0%,transparent 66%),
+  radial-gradient(75% 65% at 86% 84%,#8c5797 0%,transparent 66%),var(--g-lt);
+ animation:gdrift 8s ease-in-out infinite alternate}
+@keyframes gdrift{from{transform:translate(-3%,-2%) scale(1.04)}to{transform:translate(3%,3%) scale(1.12)}}
+.genchip{position:absolute;left:16px;top:14px;display:inline-flex;align-items:center;gap:8px;z-index:2;
+ background:rgba(255,255,255,.4);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+ border-radius:999px;padding:7px 13px;color:var(--navy);font-size:12.5px;font-weight:700;transition:opacity .5s}
+.genchip i{width:12px;height:12px;border-radius:50%;border:2px dashed var(--navy);animation:spin 2.6s linear infinite}
+.genchip.ok{opacity:0}
+.genout{position:relative;z-index:1;opacity:var(--go,0);transform:translateY(calc((1 - var(--go,0))*14px))}
+.gh{font-size:15px;font-weight:700;color:var(--navy);padding:2px 6px 12px}
+.gcard{background:#fff;border-radius:22px;padding:18px 18px 8px}
+.gs{padding:0 0 14px}.gs+.gs{border-top:1px solid #edeff3;padding-top:14px}
+.gs .n{display:flex;align-items:center;gap:9px;font-size:30px;font-weight:700;letter-spacing:-.03em;color:var(--ink);line-height:1.1}
+.gs .n em{font-style:normal;margin-left:auto;font-size:12.5px;font-weight:600;letter-spacing:0;color:#8a93a3}
+.gs .l{font-size:14.5px;font-weight:600;color:var(--ink);margin-top:5px}
+.gs .s{font-size:12.5px;color:#8a93a3;margin-top:2px}
+.tr{width:30px;height:26px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
+.tr svg{width:16px;height:16px}.tr.up{background:#d6f2e4;color:#1c9c60}.tr.dn{background:#fde3e3;color:#d35858}
+
+/* glass lens dropdown */
+.glass{position:absolute;z-index:8;left:max(2.4vw,18px);top:31vh;width:272px;border-radius:26px;padding:16px 16px 18px;color:#fff;
+ background:rgba(91,97,150,.58);backdrop-filter:blur(22px) saturate(1.5);-webkit-backdrop-filter:blur(22px) saturate(1.5);
+ box-shadow:0 26px 60px rgba(30,40,100,.26),0 1px 0 rgba(255,255,255,.35) inset;
+ opacity:0;transform:translateY(16px) scale(.88);transform-origin:20% 100%;transition:transform .7s cubic-bezier(.25,1.1,.4,1)}
+.glass.open{transform:none}
+.glh{display:flex;justify-content:center;position:relative;font-size:13px;font-weight:700;letter-spacing:.02em;
+ padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.22);margin-bottom:6px}
+.glh svg{position:absolute;right:2px;top:-1px;width:17px;height:17px;opacity:.85}
+.gg{display:grid;grid-template-columns:1fr 1fr;gap:2px 4px}
+.gt{display:flex;align-items:center;gap:9px;padding:10px 6px;border-radius:16px;font-size:12.5px;font-weight:600;cursor:pointer;transition:background .4s}
+.gt.on{background:rgba(255,255,255,.22)}
+.gt .gav{transition:transform .4s}.gt.on .gav{transform:scale(1.1)}
+
+/* left-side text used by banner + rubric scenes */
+.stx{position:absolute;left:max(28px,calc(50% - 540px));top:36vh;width:min(400px,36vw);z-index:6;opacity:0}
+.stx h2,.itx h2{font-size:clamp(30px,3.6vw,50px);letter-spacing:-.045em;line-height:1.02;font-weight:700;color:var(--sink)}
+.stx p,.itx p{margin-top:16px;font-size:clamp(15px,1.25vw,17px);color:var(--sbody);line-height:1.6;max-width:32ch}
+
+/* dark: layered ambient glow that melts into the background */
+.amb{position:absolute;inset:-12%;z-index:0;opacity:0;pointer-events:none;filter:blur(46px)}
+.amb::before,.amb::after{content:"";position:absolute;inset:0}
+.amb::before{background:
+ radial-gradient(46% 40% at 88% 10%,rgba(54,131,197,.34),transparent 72%),
+ radial-gradient(44% 46% at 6% 96%,rgba(140,87,151,.30),transparent 72%),
+ radial-gradient(64% 52% at 50% 56%,rgba(13,71,121,.15),transparent 82%);animation:ambA 18s ease-in-out infinite alternate}
+.amb::after{background:
+ radial-gradient(38% 38% at 74% 82%,rgba(84,36,91,.24),transparent 76%),
+ radial-gradient(36% 36% at 18% 16%,rgba(13,71,121,.22),transparent 76%);animation:ambB 26s ease-in-out infinite alternate}
+@keyframes ambA{to{transform:translate3d(-3%,2%,0) scale(1.07)}}
+@keyframes ambB{to{transform:translate3d(3%,-2%,0) scale(1.1)}}
+
+/* banner: starts as a pill that types as you scroll, then opens into the card */
+.ban{position:absolute;left:0;top:0;width:620px;height:244px;border-radius:26px;z-index:5;background:var(--g-dk);
+ transform-origin:0 0;opacity:0;will-change:transform,opacity,clip-path}
+.bhd{height:58px;display:flex;align-items:center;padding:0 22px;font-size:21px;font-weight:700;color:var(--dtext);white-space:nowrap;letter-spacing:-.02em}
+.bhd span{display:inline-block;min-height:1em}
+.ban .caret::after{background:#94c9f9}
+.binw{position:absolute;left:16px;right:16px;top:58px;bottom:16px;background:#12111a;border-radius:20px;overflow:hidden;opacity:0}
+.btrack{display:flex;width:200%;height:100%;will-change:transform}
+.blay{width:50%;padding:0 26px;display:flex;align-items:center;gap:36px}
+.bstat .n{display:flex;align-items:center;gap:10px;font-size:34px;font-weight:700;letter-spacing:-.03em;color:var(--dtext);line-height:1.1}
+.bstat .n em{font-style:normal;font-size:12.5px;font-weight:600;letter-spacing:0;color:var(--dmut);margin-left:6px}
+.bstat .l{font-size:15px;font-weight:600;color:var(--dtext);margin-top:12px}
+.bstat .s{font-size:12.5px;color:var(--dmut);margin-top:4px}
+.blay.b2{display:grid;grid-template-columns:1fr 1fr;gap:20px 26px;align-content:center}
+.ins{font-size:14.5px;color:var(--dtext);font-weight:500;display:flex;align-items:flex-start;gap:9px;line-height:1.35}
+.ins>svg{width:18px;height:18px;margin-top:1px;flex:0 0 auto;color:#94c9f9}
+.ins b{font-weight:700}.ins .tt{display:inline-flex;vertical-align:-3px;margin:0 3px}.ins .tt svg{width:16px;height:16px}
+.ins .tt.up{color:#6fdca8}.ins .tt.dn{color:#f08a8a}
+.ins .o{display:block;font-size:12.5px;color:var(--dmut);font-weight:500;margin-top:4px}
+.tr.dk.up{background:rgba(111,220,168,.16);color:#6fdca8}.tr.dk.dn{background:rgba(240,138,138,.16);color:#f08a8a}
+
+/* rubric: dark card, same system as the interviewer card */
+.rbuild{position:absolute;right:7vw;top:50%;width:480px;height:min(74vh,640px);margin-top:calc(min(74vh,640px)/-2);z-index:5;border-radius:28px;
+ background:#181722;border:1px solid var(--dline);box-shadow:0 40px 90px rgba(0,0,0,.55);opacity:0;will-change:transform,opacity;transform-origin:50% 88%}
+.rbin{position:relative;height:100%;border-radius:28px;overflow:hidden;padding:0 24px;color:var(--dtext)}
+.rbh{display:flex;align-items:flex-start;gap:12px;padding-top:24px}
+.rbh>svg{width:22px;height:22px;color:#94c9f9;margin-top:2px;flex:0 0 auto}
+.rbh b{font-size:19px;font-weight:700;display:block;line-height:1.2}
+.rbh span.s{display:block;font-size:13px;color:var(--dmut);font-weight:500;margin-top:4px}
+.rbh .cx{margin-left:auto;width:36px;height:36px;border-radius:50%;background:#262533;display:inline-flex;align-items:center;justify-content:center;color:var(--dbody);flex:0 0 auto}
+.rbh .cx svg{width:15px;height:15px}
+.rview{position:absolute;left:24px;right:24px;top:86px;bottom:114px;overflow:hidden;
+ -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 24px,#000 calc(100% - 20px),transparent 100%);
+ mask-image:linear-gradient(180deg,transparent 0,#000 24px,#000 calc(100% - 20px),transparent 100%)}
+.rlist{will-change:transform}
+.dim{padding:14px 0;border-bottom:1px solid var(--dline)}
+.dim h4{font-size:15px;font-weight:700;color:var(--dtext)}
+.dim h4 .pr{font-weight:600;margin-left:6px}.dim h4 .pr.hi{color:#f0a273}.dim h4 .pr.md{color:#e6c765}.dim h4 .pr.lo{color:#e58d73}
+.dim h4 .ty{font-weight:600;color:var(--dmut)}
+.dim p{font-size:13.5px;color:var(--dbody);margin:8px 0 11px;line-height:1.45}
+.dchips{display:flex;gap:8px;flex-wrap:wrap;min-height:28px}
+.dchips span{border:1.2px solid #4b4a5c;border-radius:6px;padding:4px 9px;font-size:13px;color:var(--dbody);font-weight:500;
+ opacity:0;transform:translateY(8px) scale(.9);transition:opacity .45s,transform .5s cubic-bezier(.25,1.2,.4,1)}
+.dchips span.on{opacity:1;transform:none}
+.rcomp{position:absolute;left:24px;right:24px;bottom:22px;border:1px solid #3a394a;border-radius:14px;padding:11px 13px;background:#222130}
+.rcomp .tl{display:flex;align-items:center;gap:9px;font-size:14.5px;color:var(--dmut);min-height:22px}
+.rcomp .tl svg{width:19px;height:19px;color:#94c9f9;flex:0 0 auto}
+.rcomp .tl .tx{color:var(--dmut);font-weight:500}.rcomp .tl .tx.has{color:var(--dtext)}
+.rcomp .bl{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:10px;font-size:14px;color:var(--dmut);font-weight:500}
+.rcomp .bl svg{width:15px;height:15px}.rcomp .bl i{width:1px;height:20px;background:#3a394a}
+.rcomp .bl .snd{width:22px;height:22px;color:#94c9f9;transition:transform .5s,filter .5s}.rcomp .bl .snd svg{width:22px;height:22px}
+.rcomp .bl .snd.glow{transform:scale(1.25);filter:drop-shadow(0 0 6px rgba(148,201,249,.6))}
+.rcomp .bl .cd{color:var(--dtext);font-weight:600}
+.cdd{position:absolute;right:24px;bottom:98px;width:220px;background:#222130;border:1px solid #333245;border-radius:16px;padding:7px 7px;z-index:3;
+ box-shadow:0 14px 40px rgba(0,0,0,.5);opacity:0;transform:translateY(8px) scale(.96);transform-origin:90% 100%;transition:opacity .35s,transform .45s cubic-bezier(.25,1.1,.4,1)}
+.cdd.open{opacity:1;transform:none}
+.cdd div{padding:8px 13px;font-size:14px;font-weight:500;color:var(--dbody);border-radius:9px}
+.cdd hr{border:0;border-top:1px solid #333245;margin:4px 3px}
+.cdd div.sel{background:#2d2c3c;color:#fff;font-weight:700}
+
+/* intel: profile card alone, then the full card snapped to the bottom */
+.itx{position:absolute;left:0;right:0;top:6vh;text-align:center;z-index:6;opacity:0;padding:0 20px}
+.itx p{margin:12px auto 0;max-width:46ch}
+.iclip{position:absolute;left:0;right:0;top:25vh;bottom:0;z-index:5;overflow:hidden;
+ -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 34px);mask-image:linear-gradient(180deg,transparent 0,#000 34px)}
+.intel{position:absolute;left:50%;top:0;width:min(520px,92vw);margin-left:calc(min(520px,92vw)/-2);z-index:5;opacity:0;
+ padding:26px 26px 40px;color:var(--dtext);will-change:transform,opacity}
+.intel::before{content:"";position:absolute;inset:0;border-radius:28px;background:#181722;border:1px solid var(--dline);
+ box-shadow:0 40px 90px rgba(0,0,0,.55);opacity:var(--ch,0)}
+.intel>*{position:relative}
+.ih{display:flex;align-items:flex-start;gap:12px;opacity:var(--ch,0)}
+.ih>svg{width:24px;height:24px;color:#94c9f9;margin-top:2px;flex:0 0 auto}
+.ih b{font-size:21px;font-weight:700;display:block;line-height:1.2}
+.ih span.s{display:block;font-size:14px;color:var(--dmut);font-weight:500;margin-top:5px}
+.ih .cx{margin-left:auto;width:40px;height:40px;border-radius:50%;background:#262533;display:inline-flex;align-items:center;justify-content:center;color:var(--dbody);flex:0 0 auto}
+.ih .cx svg{width:16px;height:16px}
+.iprof{background:#222130;border-radius:20px;padding:20px 18px;margin-top:18px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.ipt{display:flex;gap:14px;align-items:center}
+.ipt .nm{font-size:19px;font-weight:700;color:#8cb7f2}
+.ipt .rl{font-size:15px;font-weight:600;margin-top:2px;color:var(--dtext)}
+.ichips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.ichips span{border:1.2px solid #4b4a5c;border-radius:6px;padding:4px 9px;font-size:13.5px;color:var(--dbody);font-weight:500}
+.iq{display:flex;gap:10px;margin-top:16px;font-style:italic;font-size:14.5px;color:var(--dbody);line-height:1.5}
+.iq svg{width:17px;height:17px;color:#94c9f9;flex:0 0 auto;margin-top:2px}
+.idh{display:flex;align-items:center;margin-top:26px;opacity:var(--ch,0)}
+.idh b{font-size:19px;font-weight:700;display:flex;align-items:center;gap:9px}
+.idh b em{font-style:normal;font-size:13px;background:#2d2c3c;color:var(--dbody);border-radius:6px;padding:2px 8px;font-weight:700}
+.idh .sc{margin-left:auto;font-size:17px;font-weight:700;color:#6fdca8;display:inline-flex;align-items:center;gap:12px}
+.idh .sc i{width:38px;height:38px;border-radius:50%;background:#262533;display:inline-flex;align-items:center;justify-content:center;color:var(--dbody)}
+.idh .sc i svg{width:16px;height:16px}
+.isub{font-size:14.5px;color:var(--dmut);font-weight:500;margin:4px 0 14px;padding-bottom:14px;border-bottom:1px solid var(--dline);opacity:var(--ch,0)}
+.irow{display:flex;align-items:center;gap:12px;background:#222130;border-radius:16px;padding:13px 14px;margin-bottom:11px;opacity:0}
+.irow .t{flex:1}
+.irow .t b{font-size:15.5px;font-weight:700}.irow .t b span{font-weight:500;color:var(--dmut);margin-left:6px}
+.irow .t div{font-size:13px;color:var(--dmut);margin-top:3px}.irow .t div i{font-style:normal;font-weight:700}
+.irow .o{display:inline-flex;align-items:center;gap:7px;font-size:15px;font-weight:700}.irow .o svg{width:19px;height:19px}
+.o.ok{color:#6fdca8}.o.bad{color:#f08a8a}.t i.ok{color:#6fdca8}.t i.bad{color:#f08a8a}
+
+/* final */
+.final{position:absolute;inset:0;z-index:7;display:flex;flex-direction:column;align-items:center;justify-content:center;
+ text-align:center;padding:0 24px;opacity:0}
+.final h2{font-size:clamp(32px,5.2vw,68px);letter-spacing:-.05em;line-height:1;font-weight:700;color:var(--dtext);margin-top:26px}
+.fsub2{max-width:42ch;margin-top:20px;font-size:clamp(16px,1.4vw,19px);color:var(--dbody);line-height:1.55}
+.fsub2 b{color:var(--dtext);font-weight:700}
+.nda{margin-top:12px;font-size:13.5px;color:var(--dmut);font-weight:600}
+.talk{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:#fff;background:var(--g-med);
+ border-radius:999px;padding:12px 22px;margin-top:26px;text-decoration:none;box-shadow:0 14px 34px rgba(54,131,197,.3)}
+.talk svg{width:16px;height:16px}
+
+/* corner companion: appears and types on scroll */
+.cbtn{position:fixed;right:22px;bottom:22px;width:38px;height:38px;border-radius:50%;z-index:70;
+ box-shadow:0 6px 18px rgba(54,131,197,.28);opacity:0;transform:scale(.4);pointer-events:none}
+.cbtn .blob{width:38px;height:38px;display:block}
+.cpanel{position:fixed;right:22px;bottom:72px;width:290px;z-index:70;background:#fff;border:1px solid var(--line);border-radius:20px;
+ padding:16px 18px;box-shadow:0 26px 70px rgba(0,0,0,.35);transform-origin:bottom right;transform:scale(.16);opacity:0;pointer-events:none}
+.cph{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.cph b{font-size:13.5px;font-weight:800;color:var(--ink);display:block;line-height:1.2}.cph span{display:block;font-size:11.5px;color:var(--mut);font-weight:600}
+.cpl{font-size:13.5px;color:var(--body);font-weight:600;line-height:1.5;min-height:42px}
+
+/* responsive */
+@media (max-width:1180px){
+ .gen{display:none}
+ .glass{left:50%;margin-left:-136px;top:15vh}
+ .stage.lens .msgs{max-height:min(34vh,330px)}
+ .cap.side,.cap.abv{left:0;right:0;width:auto;top:4.6vh;text-align:center;padding:0 20px;font-size:clamp(26px,3.7vw,48px)}
+ .cap.mid{top:22vh}
+}
+@media (max-width:900px){
+ .cap small{display:none}
+ .stx{left:20px;right:20px;width:auto;top:10vh}.stx p{display:none}
+ .rbuild{left:50%;right:auto;margin-left:-46vw;width:92vw;top:58%;height:min(70vh,640px);margin-top:calc(min(70vh,640px)/-2)}
+ .itx p{display:none}
+ .dots{right:8px}
+}
+@media (max-width:560px){
+ .wrap{padding:0 18px}.ovmeta{gap:22px 30px}
+ .cpanel{width:calc(100vw - 32px);right:16px}.cbtn{right:16px;bottom:16px}
+ .fbot b{font-size:34px}.fbot small{font-size:11.5px;margin-left:4px}.fbot span{font-size:12px}
+}
+@media (prefers-reduced-motion:reduce){
+ .genart,.genchip i,.pl.prog2 i{animation:none}
+ .rv{opacity:1;transform:none;transition:none}
+}
+
+
+/* framed embed: the lens step keeps clear air between its heading and the chat, at any window height */
+.cap.abv{top:14vh}
+.stage.lens .chatpos{bottom:4vh}
+.stage.lens .msgs{max-height:clamp(88px,calc(82vh - 335px),330px)}
+@media (max-width:1180px){.cap.abv{top:4.6vh}.stage.lens .msgs{max-height:clamp(88px,calc(100vh - 460px),330px)}}
+</style>
+</head>
+<body>
+<div class="prog" id="prog"></div>
+<section id="overview" class="ov"><div class="wrap"><div class="ovmeta"><div class="mi rv d1"><div class="k">Project</div><div class="v">Interview Echoes · Post-Interview Insights</div></div><div class="mi rv d2"><div class="k">Timeline</div><div class="v">6 months</div></div><div class="mi rv d3"><div class="k">Type</div><div class="v">UI / UX study</div></div><div class="mi rv d4"><div class="k">Context &amp; Proposal</div><div class="v">Within AI Companion · Coaching Agent</div></div></div><div class="ovfocus rv d5"><div class="k">Focus areas</div><div class="v">Research · Systems Thinking · UX &amp; UI Design</div></div><div class="ovline rv d5"></div></div></section>
+<div class="story" id="story"><div class="stage" id="stage" data-s="0"><div class="amb" id="amb"></div><div class="dots" id="dots"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="bgdoc drift" id="bgdoc"><div><p><b>Interviewer:</b> Walk me through how you would decide what ships first on a roadmap like this one.</p><p><b>Candidate:</b> I would start from the customer problem, size the impact against the effort, and then pressure-test it with the team before committing.</p><p><b>Interviewer:</b> And where does AI fit into that process for you day to day?</p><p><b>Candidate:</b> Mostly summarising research and drafting specs, <mark>one prompt at a time</mark>. It saves hours every week.</p><p><b>Interviewer:</b> Do you check what it hands back before it goes anywhere?</p></div><div><p><b>Candidate:</b> I skim it, yes, but <mark>I do not have a formal review step</mark>. If something looks off I rewrite that part by hand.</p><p><b>Interviewer:</b> Tell me about a time a stakeholder disagreed with your prioritisation.</p><p><b>Candidate:</b> We had two enterprise accounts pulling in opposite directions, so I brought both into one working session and made the trade-offs visible.</p><p><b>Interviewer:</b> What did you measure afterwards to know the decision was right?</p><p><b>Candidate:</b> Activation and retention for the cohort, plus a follow-up with both accounts a quarter later.</p></div></div><div class="veil" id="veil"></div><div class="cap big on" data-c="0">Every interview<br>leaves an echo.</div><div class="cap mid" data-c="1">Everything gathers in one place.<small>Every signal, one coach.</small></div><div class="cap side" data-c="2">Ask anything about a position.<small>Talk-time, coverage, follow-ups. Answered in plain language.</small></div><div class="cap abv" data-c="3">Every lens, one conversation.<small>Recruiter, hiring manager and interviewer reads, side by side.</small></div><div class="fold" id="fold"><div class="fframe"><div class="fin"><div class="fgrad"></div><div class="fsheet"><span class="ftab"></span><div class="ftitle"><span class="favt"><svg viewBox="0 0 48 48"><rect width="48" height="48" fill="#dfe3ea"/><path d="M5 48c1-9.5 9-13.5 19-13.5S42 38.500 43 48z" fill="#4a5470"/><rect x="20.500" y="26" width="7" height="10" rx="3" fill="#cfa083"/><ellipse cx="24" cy="21" rx="8" ry="9.200" fill="#e2b698"/><path d="M15.600 20c-1-8 4-12 9-12 6 0 9.500 4.500 8.600 11.500-1.600-3.200-4-5-8.600-5.200-3.400-.1-6.200 1.600-9 5.700z" fill="#2c2431"/></svg></span>Dana Reyes</div><div class="fsub">Interviewing for Senior PM</div><div class="fbot"><b>07<small>insights</small></b><span>across 21 interviews</span></div></div></div></div></div><div class="pills" id="pills"><div class="pl note" data-m=".5,.305"><span class="blob" style="width:16px;height:16px"></span><span><b>21</b> interviews · talk-to-listen is <b>5 pts</b> from the sweet spot</span><span class="vi">View insights <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></div><div class="pl ask" data-m=".80,.40" data-dock="3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l1.7 4.6 4.6 1.7-4.6 1.7L12 16.1l-1.7-4.6L5.7 9.8l4.6-1.7z"/><path d="M18.5 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg>Ask AI</div><div class="pl person" data-m=".21,.41" data-dock="0"><span class="gav" style="width:30px;height:30px;font-size:11px">PR</span>Priya R.<span class="x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></span></div><div class="pl upload" data-m=".12,.60"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4.5 4.5 0 0 1-.5-8.97A6 6 0 0 1 18 9.5 4 4 0 0 1 17.5 18"/><path d="M12 12v7M9 14.5l3-3 3 3"/></svg>Add transcript</div><div class="pl filter" data-m=".86,.585" data-dock="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16l-6 7.5V19l-4 1.5v-8z"/></svg>Filter <b>· 2</b><span class="sepv"></span><span class="x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></span></div><div class="pl seg" data-m=".30,.80"><i class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M5 12h9M5 17h12"/></svg></i><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M8 12h8M6.5 17h11"/></svg></i><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M10 12h9M7 17h12"/></svg></i></div><div class="pl mins" data-m=".70,.835">45<span class="m">mins</span><span class="ud"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9.5l4-4 4 4M8 14.5l4 4 4-4"/></svg></span><span class="go">Schedule debrief</span></div><div class="pl side" data-m=".07,.50"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="3.5"/><path d="M9.5 4.5v15M15.5 10l-2 2 2 2"/></svg></div><div class="pl online" data-m=".90,.725" data-dock="2"><i></i>Coaching on</div><div class="pl prog2" data-m=".11,.86"><i></i>In progress</div><div class="pl search" data-m=".5,.925">Search interviews<u><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6"/><path d="M20 20l-3.5-3.5"/></svg></u></div></div><div class="gen" id="gen"><div class="genart" id="genart"></div><span class="genchip" id="genchip"><i></i><span id="genpct">Generating insights 0%</span></span><div class="genout" id="genout"><div class="gh">Hey James 👋 AI Companion has<br>a few insights for you</div><div class="gcard"><div class="gs"><div class="n">64%<span class="tr up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 16.5l6-6 4 4 7-8"/><path d="M15.5 6.5h5v5"/></svg></span><em>Org avg · 80%</em></div><div class="l">Feedback form coverage</div><div class="s">Form questions with transcript evidence</div></div><div class="gs"><div class="n">40%<span class="tr dn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 7.5l6 6 4-4 7 8"/><path d="M15.5 17.5h5v-5"/></svg></span><em>Org avg · 30%</em></div><div class="l">Your talk time across interviews</div><div class="s">Aim for the 30% sweet spot</div></div><div class="gs"><div class="n">2.2<span class="tr up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 16.5l6-6 4 4 7-8"/><path d="M15.5 6.5h5v5"/></svg></span><em>Org avg · 2</em></div><div class="l">Follow-ups per question</div></div></div></div></div><div class="chatpos" id="chatpos"><div class="chat" id="chat"><div class="chathead"><span class="blob" style="width:16px;height:16px"></span><b>Interview Coach</b><span>· Senior PM · 21 interviews</span></div><div class="msgs"><div class="pg pg1"><div class="cmsg user" id="umsg"><span class="cbub" id="ubub"></span></div><div class="cmsg bot" id="bmsg"><span class="gav" style="width:24px;height:24px;font-size:11px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l1.7 4.6 4.6 1.7-4.6 1.7L12 16.1l-1.7-4.6L5.7 9.8l4.6-1.7z"/><path d="M18.5 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg></span><span class="cbub"><span id="bt"></span></span></div><div class="cchips" id="cchips"><span class="ccap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3.5h7l4 4V20a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1z"/><path d="M13.5 3.5V8H18"/></svg>Create interview plan</span><span class="ccap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>Create scoring rubric</span><span class="ccap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M16 5.2a3 3 0 0 1 0 5.6M16.5 15.2A5.5 5.5 0 0 1 20.5 19"/></svg>Prepare debrief</span></div></div><div class="pg pg2"><div class="lline" data-l="0"><span class="gav" style="width:28px;height:28px;font-size:10px">PR</span><div class="lt"><s>Priya · Recruiter</s><span class="tx"></span></div></div><div class="lline" data-l="1"><span class="gav" style="width:28px;height:28px;font-size:10px">MH</span><div class="lt"><s>Marco · Hiring manager</s><span class="tx"></span></div></div><div class="lline" data-l="2"><span class="gav" style="width:28px;height:28px;font-size:10px">JI</span><div class="lt"><s>James · Interviewer</s><span class="tx"></span></div></div><div class="lline" data-l="3"><span class="gav" style="width:28px;height:28px;font-size:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l1.7 4.6 4.6 1.7-4.6 1.7L12 16.1l-1.7-4.6L5.7 9.8l4.6-1.7z"/><path d="M18.5 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg></span><div class="lt"><s>All lenses</s><span class="tx"></span></div></div><span class="dbtn" id="dbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M16 5.2a3 3 0 0 1 0 5.6M16.5 15.2A5.5 5.5 0 0 1 20.5 19"/></svg>Prepare debrief<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></div></div><div class="composer"><div class="cinp"><span class="qin" id="qin" data-ph="Ask anything about this position…"></span></div><div class="ctool" id="ctool"><span class="slot"></span><span class="slot"></span><span class="slot"></span><span class="sp"></span><span class="slot"></span></div></div></div></div><div class="glass" id="glass"><div class="glh">LENSES<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9.5l4-4 4 4M8 14.5l4 4 4-4"/></svg></div><div class="gg"><div class="gt"><span class="gav" style="width:36px;height:36px;font-size:12px">R</span>Recruiter</div><div class="gt"><span class="gav" style="width:36px;height:36px;font-size:12px">H</span>Hiring manager</div><div class="gt"><span class="gav" style="width:36px;height:36px;font-size:12px">I</span>Interviewer</div><div class="gt"><span class="gav" style="width:36px;height:36px;font-size:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l1.7 4.6 4.6 1.7-4.6 1.7L12 16.1l-1.7-4.6L5.7 9.8l4.6-1.7z"/><path d="M18.5 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg></span>All lenses</div></div></div><div class="ban" id="ban"><div class="bhd"><span id="bhead"></span></div><div class="binw" id="binw"><div class="btrack" id="btrack"><div class="blay"><div class="bstat"><div class="n">51</div><div class="l">Total interviews</div><div class="s">Number of interviews completed</div></div><div class="bstat"><div class="n">64%<span class="tr dk up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 16.5l6-6 4 4 7-8"/><path d="M15.5 6.5h5v5"/></svg></span><em>Org avg · 80%</em></div><div class="l">Feedback form coverage</div><div class="s">Form questions with transcript evidence</div></div></div><div class="blay b2"><div class="ins"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><div>Interviews ran <b>5.6 min</b><span class="tt up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 16.5l6-6 4 4 7-8"/><path d="M15.5 6.5h5v5"/></svg></span> over schedule<span class="o">Org avg · 15 min</span></div></div><div class="ins"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3.5h10M7 20.5h10M8 3.5c0 5 8 5 8 8.5s-8 3.5-8 8.5"/><path d="M16 3.5c0 5-8 5-8 8.5s8 3.5 8 8.5"/></svg><div>Start time delayed by <b>2 min</b><span class="tt up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 16.5l6-6 4 4 7-8"/><path d="M15.5 6.5h5v5"/></svg></span><span class="o">Org avg · 5 min</span></div></div><div class="ins"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16h16"/><path d="M7.5 15l4-4.5 3 2.5 4.5-6"/></svg><div>Your talk time was <b>40%</b><span class="tt dn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 7.5l6 6 4-4 7 8"/><path d="M15.5 17.5h5v-5"/></svg></span><span class="o">Org avg · 30%</span></div></div><div class="ins"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6"/><path d="M20 20l-3.5-3.5"/></svg><div><b>2.2</b><span class="tt up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 16.5l6-6 4 4 7-8"/><path d="M15.5 6.5h5v5"/></svg></span> follow-ups per question<span class="o">Org avg · 2</span></div></div></div></div></div></div><div class="stx" id="btxt"><h2>Insights,<br>before you ask.</h2><p>Benchmarked against your org, interview by interview.</p></div><div class="rbuild" id="rbuild"><div class="rbin"><div class="rbh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l1.7 4.6 4.6 1.7-4.6 1.7L12 16.1l-1.7-4.6L5.7 9.8l4.6-1.7z"/><path d="M18.5 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg><div><b>Build interview rubric</b><span class="s">Describe the role, refine by chatting</span></div><span class="cx"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></span></div><div class="rview" id="rview"><div class="rlist" id="rlist"><div class="dim"><h4>1. Product sense <span class="pr hi">· High</span> <span class="ty">· Technical</span></h4><p>How they frame problems, size impact and choose what ships first?</p><div class="dchips"><span>Problem framing</span><span>Prioritization</span><span>Impact sizing</span><span>Trade-offs</span></div></div><div class="dim"><h4>2. AI tools proficiency <span class="pr hi">· High</span> <span class="ty">· Technical</span></h4><p>How they use AI in real workflows, and check what it hands back?</p><div class="dchips"><span>Prompt depth</span><span>Review step</span><span>Workflow design</span></div></div><div class="dim"><h4>3. Execution <span class="pr md">· Medium</span> <span class="ty">· Technical</span></h4><p>How they plan, ship and measure outcomes with engineering?</p><div class="dchips"><span>Planning</span><span>Delivery</span><span>Metrics</span></div></div><div class="dim"><h4>4. Collaboration &amp; Teamwork <span class="pr md">· Medium</span> <span class="ty">· Behavioral</span></h4><p>How they partner with design, engineering, and research, share ownership, and handle disagreement?</p><div class="dchips"><span>Cross-functional</span><span>Shared ownership</span><span>Conflict</span><span>Feedback</span></div></div><div class="dim"><h4>5. Leadership &amp; Influence <span class="pr lo">· Low</span> <span class="ty">· Behavioral</span></h4><p>Driving direction without authority, setting standards and moving stakeholders through reasoning</p><div class="dchips"><span>Direction-setting</span><span>Standards</span><span>Influence</span><span>Ownership</span></div></div></div></div><div class="cdd" id="cdd"><div>Senior Manager</div><div>Manager</div><hr><div>Principal / Architect</div><div>Staff / Lead</div><div id="cdsel">Senior</div><hr><div>Mid-level</div><div>Entry-level / Junior</div><div>Intern</div></div><div class="rcomp"><div class="tl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l1.7 4.6 4.6 1.7-4.6 1.7L12 16.1l-1.7-4.6L5.7 9.8l4.6-1.7z"/><path d="M18.5 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg><span class="tx" id="rmsg">Write a message…</span></div><div class="bl"><span class="cd" id="cond">Set condition</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg><i></i><span class="snd" id="snd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l17 8-17 8 3.5-8z"/></svg></span></div></div></div></div><div class="stx" id="rtxt"><h2>Rubrics that<br>write themselves.</h2><p>Describe the role. Refine it by chatting. Every next interview is scored the same way.</p></div><div class="iclip" id="iclip"><div class="intel" id="intel"><div class="ih"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l1.7 4.6 4.6 1.7-4.6 1.7L12 16.1l-1.7-4.6L5.7 9.8l4.6-1.7z"/><path d="M18.5 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg><div><b>Interviewer intelligence</b><span class="s">Review interviewer alignment across completed interviews</span></div><span class="cx"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></span></div><div class="iprof" id="iprof"><div class="ipt"><span class="gav dk" style="width:54px;height:54px;font-size:18px">DR</span><div><div class="nm">Dana Reyes</div><div class="rl">Senior PM · Interviewer</div></div></div><div class="ichips"><span>Prioritization</span><span>Roadmapping</span><span>AI workflows</span><span>Metrics</span></div><div class="iq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l1.7 4.6 4.6 1.7-4.6 1.7L12 16.1l-1.7-4.6L5.7 9.8l4.6-1.7z"/><path d="M18.5 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg><span>“She consistently surfaces high-performing candidates for the Product team”</span></div></div><div class="idh"><b>Decision alignment <em>4</em></b><span class="sc"><span id="iscore">0</span><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg></i></span></div><div class="isub">Calls vs final hiring outcomes</div><div class="irow"><span class="gav dk" style="width:32px;height:32px;font-size:11px">AR</span><div class="t"><b>Asha Rao<span>· Senior PM</span></b><div>Status → <i class="ok">Strong hire</i></div></div><span class="o ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 11v9H4.5a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1zM8 11l4-7c1.4 0 2.3 1.1 2 2.5L13.3 10H19a1.6 1.6 0 0 1 1.6 2l-1.6 6.5A2 2 0 0 1 17 20H8"/></svg>Hired</span></div><div class="irow"><span class="gav dk" style="width:32px;height:32px;font-size:11px">LM</span><div class="t"><b>Leo Marsh<span>· PM</span></b><div>Status → <i class="ok">Hire</i></div></div><span class="o ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 11v9H4.5a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1zM8 11l4-7c1.4 0 2.3 1.1 2 2.5L13.3 10H19a1.6 1.6 0 0 1 1.6 2l-1.6 6.5A2 2 0 0 1 17 20H8"/></svg>Hired</span></div><div class="irow"><span class="gav dk" style="width:32px;height:32px;font-size:11px">MT</span><div class="t"><b>Mei Tanaka<span>· Senior PM</span></b><div>Status → <i class="bad">No hire</i></div></div><span class="o bad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13V4H4.5a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1zM8 13l4 7c1.4 0 2.3-1.1 2-2.5L13.3 14H19a1.6 1.6 0 0 0 1.6-2L19 5.5A2 2 0 0 0 17 4H8"/></svg>Rejected</span></div><div class="irow"><span class="gav dk" style="width:32px;height:32px;font-size:11px">OD</span><div class="t"><b>Omar Diaz<span>· Senior PM</span></b><div>Status → <i class="bad">Hire</i></div></div><span class="o bad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M9 9l6 6M15 9l-6 6"/></svg>Declined</span></div></div></div><div class="itx" id="itx"><h2>Know every interviewer’s impact.</h2><p>Alignment between each call and the final decision, across every completed interview.</p></div><div class="final" id="final"><span class="blob" style="width:44px;height:44px"></span><h2>A hiring loop<br>that keeps learning.</h2><p class="fsub2">AI Companion <b>coaches</b> every interviewer. It never monitors them.</p><p class="nda">Screens are under NDA. Happy to walk you through them.</p><a class="talk" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 5.5h15a1.5 1.5 0 0 1 1.5 1.5v8a1.5 1.5 0 0 1-1.5 1.5H9l-4 3.5V7a1.5 1.5 0 0 1 1.5-1.5z"/></svg>Let’s talk</a></div></div></div>
+<div class="cpanel" id="cpanel"><div class="cph"><span class="blob" style="width:18px;height:18px"></span><div><b>AI Companion</b><span>Next up</span></div></div><div class="cpl" id="cptxt"></div></div><div class="cbtn" id="cbtn" aria-hidden="true"><span class="blob" style="width:38px;height:38px"></span></div>
+<script>
+
+(function(){
+ var $=function(s,c){return (c||document).querySelector(s)}, $$=function(s,c){return [].slice.call((c||document).querySelectorAll(s))};
+ var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
+ var clamp=function(v,a,b){return Math.max(a===undefined?0:a,Math.min(b===undefined?1:b,v))};
+ var lerp=function(a,b,t){return a+(b-a)*t};
+ var eo=function(t){return 1-Math.pow(1-t,3)};
+ var eio=function(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2};
+ var seg=function(U,a,b){return clamp((U-a)/(b-a))};
+ var bez=function(a,c,b,t){var u=1-t;return u*u*a+2*u*t*c+t*t*b};
+ var mix=function(a,b,t){return 'rgb('+Math.round(lerp(a[0],b[0],t))+','+Math.round(lerp(a[1],b[1],t))+','+Math.round(lerp(a[2],b[2],t))+')'};
+ var K=.8; // 1 timeline unit = K vh of scroll
+
+ var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.14});
+ $$('.rv').forEach(function(el){io.observe(el);});
+
+ var story=$('#story'),stage=$('#stage'),fold=$('#fold'),pills=$$('.pl'),slots=$$('#ctool .slot'),pillsEl=$('#pills'),
+     chatpos=$('#chatpos'),qin=$('#qin'),prog=$('#prog'),glass=$('#glass'),gen=$('#gen'),bgdoc=$('#bgdoc'),veil=$('#veil'),
+     amb=$('#amb'),dots=$$('#dots i'),
+     ban=$('#ban'),btxt=$('#btxt'),btrack=$('#btrack'),binw=$('#binw'),bhead=$('#bhead'),
+     rbuild=$('#rbuild'),rtxt=$('#rtxt'),rlist=$('#rlist'),rview=$('#rview'),chips=$$('.dchips span'),
+     cdd=$('#cdd'),cdsel=$('#cdsel'),cond=$('#cond'),rmsg=$('#rmsg'),snd=$('#snd'),
+     intel=$('#intel'),itx=$('#itx'),iprof=$('#iprof'),irows=$$('.irow'),iscore=$('#iscore'),fin=$('#final'),
+     cbtn=$('#cbtn'),cpanel=$('#cpanel'),cptxt=$('#cptxt');
+ var W=0,H=0,sc=1,sd=.86;
+ var HEAD=Array.from("Hey James 👋 AI Companion has a few insights for you"),CPT="Panel calibrated. Two rounds now carry the AI-workflow task.";
+ var bfw=560,headN=-1,pillW=56,cptN=-1;
+
+ function typeInto(el,text,speed,cb){
+  var ch=Array.from(text);
+  if(reduce){el.textContent=text;if(cb)cb();return;}
+  el.classList.add('caret');var i=0;
+  (function t(){ if(i<=ch.length){el.textContent=ch.slice(0,i).join('');i++;setTimeout(t,speed);}
+   else{el.classList.remove('caret');if(cb)cb();} })();
+ }
+ function measure(){
+  W=stage.clientWidth;H=stage.clientHeight;sc=W<640?.62:1;sd=W<640?.5:.86;
+  pills.forEach(function(p,i){
+   p._w=p.offsetWidth;p._h=p.offsetHeight;
+   var m=p.getAttribute('data-m').split(',');p._fx=parseFloat(m[0]);p._fy=parseFloat(m[1]);
+   var d=p.getAttribute('data-dock');p._dock=d===null?-1:parseInt(d,10);p._i=i;
+   if(p._dock>=0){var s=slots[p._dock];s.style.width=(p._w*sd)+'px';s.style.height=(p._h*sd)+'px';}
+  });
+  var t=bhead.textContent;bhead.textContent=HEAD.join('');bfw=bhead.offsetWidth;bhead.textContent=t;headN=-1;
+ }
+
+ // --- timed / typed moments (each runs once, then stays) ---
+ var ran={};
+ function runGen(){
+  var chip=$('#genchip'),pct=$('#genpct');
+  var t0=null,dur=reduce?1:3600;
+  function step(ts){
+   if(!t0)t0=ts;var k=clamp((ts-t0)/dur);
+   pct.textContent='Generating insights '+Math.round(eo(k)*100)+'%';
+   gen.style.setProperty('--gb',(18*(1-eo(k))).toFixed(1)+'px');
+   gen.style.setProperty('--go',clamp((k-.6)/.32).toFixed(2));
+   if(k<1)requestAnimationFrame(step);else chip.classList.add('ok');
+  }
+  setTimeout(function(){requestAnimationFrame(step);},reduce?0:900);
+ }
+ function runChat(){
+  if(ran.chat)return;ran.chat=1;
+  var Q="How did the panel do on this position?",A="Across 21 interviews, talk-to-listen is 25:75 and coverage is 64%. Three themes are worth a closer look.";
+  runGen();
+  setTimeout(function(){
+   typeInto(qin,Q,reduce?0:28,function(){
+    var ask=pills.filter(function(p){return p.classList.contains('ask')})[0];
+    if(ask){ask.classList.add('press');setTimeout(function(){ask.classList.remove('press')},450);}
+    setTimeout(function(){
+     $('#ubub').textContent=Q;$('#umsg').classList.add('show');qin.textContent='';
+     setTimeout(function(){
+      $('#bmsg').classList.add('show');
+      typeInto($('#bt'),A,reduce?0:17,function(){$('#cchips').classList.add('show');});
+     },380);
+    },reduce?0:420);
+   });
+  },reduce?0:700);
+ }
+ var tiles=$$('.gt'),lines=$$('.lline'),dbtn=$('#dbtn'),lensIdx=-2,typed={};
+ var LT=["Two rounds ran over their slots.","Panel aligned on 2 of 3 must-haves.","Talk-time 40%. Aim for 30%.","Agreement on must-haves. AI skills are the gap."];
+ function showLens(i){
+  if(i===lensIdx)return;lensIdx=i;
+  tiles.forEach(function(t,k){t.classList.toggle('on',k===i);});
+  lines.forEach(function(l,k){
+   var on=k<=i;l.classList.toggle('show',on);
+   if(on&&!typed[k]){typed[k]=1;typeInto($('.tx',l),LT[k],reduce?0:14);}
+  });
+  dbtn.classList.toggle('show',i>=3);
+ }
+ tiles.forEach(function(t,k){t.addEventListener('click',function(){showLens(k);});});
+
+ function runRubricMsg(){
+  if(ran.rub)return;ran.rub=1;
+  rmsg.textContent='';rmsg.classList.add('has');
+  typeInto(rmsg,"Add a dimension on critical thinking",reduce?0:42);
+ }
+
+ var curN=-1,curCap=-9,caps=$$('.cap'),chipCount=-1,listY=0;
+ function setScene(n,U){
+  if(n!==curN){
+   curN=n;stage.setAttribute('data-s',n);
+   stage.classList.toggle('cho',n>=1);stage.classList.toggle('lens',n>=2);
+   if(n>=1)runChat();
+   dots.forEach(function(d,k){d.classList.toggle('on',k===n);});
+  }
+  // headlines move around: top, centre, beside the card, above the chat
+  var c=n===0?(U<150?0:(U<240?-1:1)):(n===1?2:(n===2?3:-1));
+  if(c!==curCap){curCap=c;caps.forEach(function(el){el.classList.toggle('on',parseInt(el.getAttribute('data-c'),10)===c);});}
+ }
+
+ var live=false,Us=null,last=0;
+ function frame(now){
+  var r=story.getBoundingClientRect(),vh=window.innerHeight;
+  var total=story.offsetHeight-vh;
+  var Ut=clamp(-r.top,0,total)/vh*100/K;
+  var dt=Math.min(64,now-(last||now));last=now;
+  if(Us===null||reduce)Us=Ut;else Us+=(Ut-Us)*(1-Math.exp(-dt/200));
+  if(Math.abs(Ut-Us)<.04)Us=Ut;
+  var U=Us;
+  var inView=r.bottom>0&&r.top<vh;
+  if(inView||live){
+   live=inView;
+   setScene(U<320?0:(U<440?1:(U<815?2:(U<1360?3:(U<1965?4:(U<2455?5:6))))),U);
+
+   // light -> dark, gradually, while the chat leaves; layered glow blends in with it
+   var dk=eio(seg(U,780,900));
+   stage.style.setProperty('--sbg',mix([251,251,253],[11,11,16],dk));
+   stage.style.setProperty('--sink',mix([20,23,31],[241,240,247],dk));
+   stage.style.setProperty('--sbody',mix([90,100,115],[180,177,194],dk));
+   amb.style.opacity=dk.toFixed(3);
+
+   // folder opens first, then pills rise out on curved paths and settle
+   var tA=seg(U,10,150),tB=seg(U,185,300);
+   var o=eo(clamp(tA*2.2)),eB=eio(tB);
+   fold.style.setProperty('--o',o.toFixed(3));
+   fold.style.opacity=Math.max(0,1-.58*eo(clamp((tA-.4)/.6))-.42*eB).toFixed(3);
+   fold.style.transform='translate(-50%,-50%) translateY('+(-eB*9).toFixed(2)+'vh) scale('+(1-.2*eB).toFixed(3)+')';
+   var ce=clamp((tB-.3)/.6);
+   var cout=seg(U,770,815);
+   chatpos.style.opacity=(ce*(1-cout)).toFixed(3);
+   chatpos.style.transform='translate3d('+(-cout*5).toFixed(2)+'vw,'+((1-eo(ce))*44).toFixed(1)+'px,0) scale('+(1-.04*cout).toFixed(3)+')';
+   pillsEl.style.opacity=(1-cout).toFixed(3);
+
+   var bgv=seg(U,300,360)*(1-seg(U,775,830));
+   bgdoc.style.opacity=(bgv*.5).toFixed(3);veil.style.opacity=bgv.toFixed(3);
+   var gi=eo(seg(U,330,390));
+   gen.style.opacity=(gi*(1-cout)).toFixed(3);
+   gen.style.transform='translateX('+((1-gi)*90).toFixed(1)+'px)';
+   var gOp=eo(seg(U,455,490))*(1-cout);
+   glass.style.opacity=gOp.toFixed(3);glass.classList.toggle('open',U>=450&&cout<.5);
+
+   var st=stage.getBoundingClientRect(),N=pills.length;
+   var foldH=Math.min(330,W*.7),fcx=W/2,fcy=H*.57-foldH*.16,qr=qin.getBoundingClientRect();
+   var qx=qr.left-st.left+Math.min(qr.width,260)/2,qy=qr.top-st.top+qr.height/2;
+   for(var i=0;i<N;i++){
+    var p=pills[i];
+    var ta=clamp((tA-.14-i*.038)/(1-.14-.038*(N-1))),tb=clamp((tB-i*.03)/(1-.03*(N-1)));
+    var hw=p._w*sc/2+10,mx=clamp(p._fx*W,hw,W-hw),my=p._fy*H;
+    var fl=ta*(1-tb);
+    mx+=Math.sin(now/900+i*1.7)*7*fl;my+=Math.cos(now/1100+i*2.3)*6*fl;
+    var x,y,s,op;
+    if(tB<=0){
+     var k=eio(ta);
+     var cx=lerp(fcx,mx,.45),cy=Math.min(fcy-foldH*.34,lerp(fcy,my,.5)-70);
+     x=bez(fcx,cx,mx,k);y=bez(fcy,cy,my,k);
+     s=lerp(.34,sc,eo(ta));op=eo(clamp(ta*2.6));
+    }else{
+     var tx,ty,ts;
+     if(p._dock>=0){var sr=slots[p._dock].getBoundingClientRect();tx=sr.left-st.left+sr.width/2;ty=sr.top-st.top+sr.height/2;ts=sd;}
+     else{tx=qx;ty=qy;ts=.3;}
+     var k2=eio(tb);
+     var c2x=lerp(mx,tx,.5)+(p._fx<.5?-1:1)*26,c2y=lerp(my,ty,.5)-30;
+     x=bez(mx,c2x,tx,k2);y=bez(my,c2y,ty,k2);s=lerp(sc,ts,k2);
+     op=p._dock>=0?1:1-eo(clamp((tb-.45)/.55));
+    }
+    p.style.opacity=op.toFixed(3);
+    p.style.transform='translate3d('+(x-p._w/2).toFixed(1)+'px,'+(y-p._h/2).toFixed(1)+'px,0) scale('+s.toFixed(3)+')';
+   }
+
+   // lenses: one at a time, each held
+   if(U>=450){showLens(U<470?-1:Math.min(3,Math.floor((U-470)/70)));}
+   else if(lensIdx!==-2){showLens(-1);}
+
+   // ---- insights: a pill that types as you scroll, widens, then opens into the card
+   var narrow=W<=900;
+   var bin=eo(seg(U,815,850)),bx=seg(U,1320,1360);
+   var bs=narrow?Math.min(1,(W-40)/620):1,cw=620*bs,chh=244*bs;
+   var fx=narrow?(W-cw)/2:W-cw*.95,fy=narrow?H*.5-chh*.5+H*.04:H*.5-chh*.5;
+   var sZ=Math.max(bs,Math.min(1.9,W*.88/(bfw+44)));
+   var ee=eio(seg(U,1000,1090));
+   var tf=seg(U,850,950);
+   var hn=Math.round(tf*HEAD.length);
+   if(hn!==headN){headN=hn;bhead.textContent=HEAD.slice(0,hn).join('');pillW=Math.max(56,bhead.offsetWidth+44);}
+   bhead.classList.toggle('caret',tf>0&&tf<1);
+   var cs=lerp(sZ,bs,ee);
+   var cx0=lerp((W-pillW*cs)/2,fx,ee),cy0=lerp(H*.46-29*cs,fy,ee);
+   var cutR=lerp(620-pillW,0,ee),cutB=lerp(244-58,0,ee),rad=lerp(29,26,ee);
+   ban.style.clipPath='inset(0px '+cutR.toFixed(1)+'px '+cutB.toFixed(1)+'px 0px round '+rad.toFixed(1)+'px)';
+   ban.style.opacity=(bin*(1-bx)).toFixed(3);
+   ban.style.transform='translate3d('+cx0.toFixed(1)+'px,'+(cy0-bx*H*.05).toFixed(1)+'px,0) scale('+cs.toFixed(3)+')';
+   binw.style.opacity=seg(U,1050,1100).toFixed(3);
+   btrack.style.transform='translate3d('+(-50*eio(seg(U,1190,1270))).toFixed(2)+'%,0,0)';
+   var bt=seg(U,1070,1110)*(1-bx);
+   btxt.style.opacity=bt.toFixed(3);btxt.style.transform='translateY('+((1-seg(U,1070,1110))*16).toFixed(1)+'px)';
+
+   // ---- rubric: dark card centred vertically; tags added one by one, then zoom to the composer
+   var re=eo(seg(U,1365,1420)),rx=seg(U,1920,1965);
+   var ze2=eio(seg(U,1670,1750));
+   var pw=Math.min(480,W*.92),pcx=narrow?W/2:W-W*.07-pw/2;
+   var shiftX=(W/2-pcx)*ze2,shiftY=-H*.12*ze2;
+   rbuild.style.opacity=(re*(1-rx)).toFixed(3);
+   rbuild.style.transform='translate3d('+shiftX.toFixed(1)+'px,'+(((1-re)*H*.8)+rx*H*.12+shiftY).toFixed(1)+'px,0) scale('+lerp(1,narrow?1.3:1.55,ze2).toFixed(3)+')';
+   var rt=seg(U,1400,1435)*(1-rx)*(1-seg(U,1660,1700));
+   rtxt.style.opacity=rt.toFixed(3);rtxt.style.transform='translateY('+((1-seg(U,1400,1435))*16).toFixed(1)+'px)';
+   var cp=seg(U,1430,1630),cc=Math.round(cp*chips.length);
+   if(cc!==chipCount){chipCount=cc;chips.forEach(function(c,k){c.classList.toggle('on',k<cc);});}
+   var L=Math.max(0,rlist.offsetHeight-rview.offsetHeight+10),tgt=0;
+   if(cc>0){var ce2=chips[Math.min(cc,chips.length)-1];tgt=clamp(ce2.offsetTop-rview.offsetHeight*.6,0,L);}
+   listY+=(tgt-listY)*.12;
+   rlist.style.transform='translate3d(0,'+(-listY).toFixed(1)+'px,0)';
+   if(U>=1760)runRubricMsg();
+   cdd.classList.toggle('open',U>=1810&&U<1870);
+   cdsel.classList.toggle('sel',U>=1840);
+   if(U>=1870){cond.textContent='Senior';snd.classList.add('glow');}else{cond.textContent='Set condition';snd.classList.remove('glow');}
+
+   // ---- interviewer intelligence: Dana's card alone, then the full card snapped to the bottom
+   var ix=seg(U,2410,2455),ci=eo(seg(U,1975,2020))*(1-ix);
+   var chrome=eo(seg(U,2090,2160)),mv=eio(seg(U,2090,2180)),scr=eio(seg(U,2180,2380));
+   var pc=iprof.offsetTop+iprof.offsetHeight/2,ih=intel.offsetHeight;
+   var clipT=H*.25,ty1=H*.53-pc-clipT,ty2=H*.42-clipT,Lc=Math.max(0,ty2+clipT+ih-(H-26));
+   var ty=lerp(ty1,ty2,mv)-Lc*scr+ix*H*.2;
+   intel.style.opacity=ci.toFixed(3);
+   intel.style.setProperty('--ch',chrome.toFixed(3));
+   intel.style.transformOrigin='50% '+pc+'px';
+   intel.style.transform='translate3d(0,'+ty.toFixed(1)+'px,0) scale('+lerp(1.12,1,mv).toFixed(3)+')';
+   var it=seg(U,1970,2005)*(1-ix);
+   itx.style.opacity=it.toFixed(3);itx.style.transform='translateY('+((1-seg(U,1970,2005))*14).toFixed(1)+'px)';
+   irows.forEach(function(row,k){
+    var q=eo(seg(U,2200+k*45,2250+k*45));row.style.opacity=q.toFixed(3);row.style.transform='translateY('+((1-q)*12).toFixed(1)+'px)';
+   });
+   iscore.textContent=Math.round(91*eo(seg(U,2210,2360)));
+
+   // finale, then the companion arrives and types its note, all on scroll
+   var fo=eo(seg(U,2460,2510));
+   fin.style.opacity=fo.toFixed(3);fin.style.transform='translateY('+((1-fo)*18).toFixed(1)+'px)';
+   fin.style.pointerEvents=fo>.5?'auto':'none';
+   var cb=eo(seg(U,2520,2560)),cpp=eo(seg(U,2565,2605));
+   cbtn.style.opacity=cb.toFixed(3);cbtn.style.transform='scale('+lerp(.4,1,cb).toFixed(3)+')';
+   cpanel.style.opacity=cpp.toFixed(3);cpanel.style.transform='scale('+lerp(.16,1,cpp).toFixed(3)+')';
+   var cn=Math.round(seg(U,2610,2690)*CPT.length);
+   if(cn!==cptN){cptN=cn;cptxt.textContent=CPT.slice(0,cn);}
+
+   var h=document.documentElement,m=h.scrollHeight-h.clientHeight;
+   prog.style.transform='scaleX('+(m>0?(h.scrollTop/m):0).toFixed(4)+')';
+  }
+  requestAnimationFrame(frame);
+ }
+ measure();
+ window.addEventListener('resize',measure);
+ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(measure);
+ requestAnimationFrame(frame);
+})();
+
+</script>
+</body>
+</html>
